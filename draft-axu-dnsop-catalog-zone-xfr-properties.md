@@ -184,9 +184,7 @@ Catalog consumers MUST transfer member zone and incremental updates over either 
 An authentication domain name (see {{Section 2 of !RFC8310}}) MAY be provided by a PTR RRset, which MUST consist of a single PTR RR, at the same name as the TLSA RRset.
 When an authentication domain name is provided, catalog consumer MUST send the TLS SNI extension containing that name.
 
-For the same reasons as given in {{Section 3.1.3 of !RFC7672}}, the TLSA RRs with certificate usage PKIX-TA(0) or PKIX-EE(1) SHOULD NOT be included.
-Usage of such RRs by catalog consumers is undefined.
-Catalog consumers MAY treat such RRs as "unusable".
+For the same reasons as given in {{Section 3.1.3 of !RFC7672}}, the TLSA RRs with certificate usage PKIX-TA(0) or PKIX-EE(1) SHOULD NOT be included. Catalog consumers SHOULD treat such RRs as "unusable" and ignore the affected `primaries` property. Catalog consumers SHOULD also communicate the error to the operator (e.g., through a log message).
 
 ~~~ ascii-art
 ZONELABEL2.zones.$CATZ  0                IN PTR example.net.
