@@ -233,7 +233,7 @@ The absence of an `allow-query` property at both apex of the catalog as well as 
 
 Additional attributes (such as TSIG keys) can be bound to specific APL RRs by an additional label below the property label.
 The prefixes (with or without attributes) will be processed in {{Section 6 of !RFC4034 (canonical order)}}, which means that the RRsets at the `allow-query` property label will be processed first, followed by the RRsets with the additional label in canonical order.
-When a catalog consumer encounters an APL RRset containing more that a single APL RR, MUST be interpreted as an APL RRset containing a single APL RR denying all IP addresses, i.e.: `APL !1:0.0.0.0/0 !2:0:0:0:0:0:0:0:0/0`.
+When a catalog consumer encounters an APL RRset containing more that a single APL RR, it MUST be interpreted as an APL RRset containing a single APL RR denying all IP addresses, i.e.: `APL !1:0.0.0.0/0 !2:0:0:0:0:0:0:0:0/0`.
 
 ### TSIG Key Name
 
@@ -262,7 +262,7 @@ The prefixes listed in the APL are processed in order:
 The absence of an `allow-transfer` property at both apex of the catalog as well as at a member zone, signifies that transfers of the zone from the consumer MUST NOT be allowed.
 Additional attributes (such as TSIG keys) can be bound to specific APL RRs by an additional label below the property label.
 The prefixes (with or without attributes) will be processed in {{Section 6 of !RFC4034 (canonical order)}}, which means that the RRsets at the `allow-transfer` property label will be processed first, followed by the RRsets with the additional label in canonical order.
-When a catalog consumer encounters an APL RRset containing more that a single APL RR, MUST be interpreted as an APL RRset containing a single APL RR denying all IP addresses, i.e.: `APL !1:0.0.0.0/0 !2:0:0:0:0:0:0:0:0/0`.
+When a catalog consumer encounters an APL RRset containing more that a single APL RR, it MUST be interpreted as an APL RRset containing a single APL RR denying all IP addresses, i.e.: `APL !1:0.0.0.0/0 !2:0:0:0:0:0:0:0:0/0`.
 
 ### TSIG Key Name
 
@@ -303,7 +303,7 @@ where `<unique-N>` is a label that tags each record in the collection and has a 
 When different `<unique-N>` labels hold the same TXT value (i.e., provide more than a single place to assign properties to the same group), the catalog zone is broken and MUST NOT be processed (see {{Section 5.1. of !RFC9432}}).
 
 Properties assigned to a catalog group, below an entry below the `groups` property extends the configuration that was already associated with that group.
-If the existing configuration for the group had a configuration value, that is also targeted with property assigned for the group, then the assigned properties value MUST override the original value.
+If the existing configuration for the group had a configuration value that is also targeted with property assigned for the group, then the assigned property's value MUST override the original value.
 If there was no existing group yet, then an entry below the `groups` property defines the new group.
 
 # Implementation and Operational Notes
