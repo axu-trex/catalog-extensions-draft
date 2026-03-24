@@ -279,7 +279,7 @@ ZONELABEL5.zones.$CATZ  0                IN PTR example.local.
 50-external.allow-transfer.ZONELABEL5.zones.$CATZ 0 IN TXT "keyname"
 ~~~
 
-If there are RRs other than APL or CNAME attached to the allow-transfer property, and if an APL RR cannot be found or there is a CNAME that doesn't point to an APL, then the most restrictive access list possible SHOULD be assumed.
+If there are RRs other than APL, CNAME, or TXT attached to the allow-transfer property, or if neither an APL RR, nor a TXT RR can be found and there is also no CNAME that points to a meaningful RR (APL or TXT), then the most restrictive access list possible SHOULD be assumed.
 
 # Assigning properties to groups {#groups}
 
