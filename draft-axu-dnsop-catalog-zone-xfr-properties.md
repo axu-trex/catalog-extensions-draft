@@ -104,7 +104,7 @@ This document specifies DNS Catalog Zones Properties to specify primary name ser
 
 # Catalog Zone Structure
 
-The new properties, specified in {{new-properties}}, MAY be at the apex of the catalog zone, where they will affect all member zones, or under a member zone label, where they will affect just that member zone. Any property under a member zone label will override that same property at the apex.
+The new properties, specified in {{new-properties}}, MAY be at the apex of the catalog zone, where they will affect all member zones, or under a member zone label, where they will affect just that member zone. Any property under a member zone label will override that same property at the apex, which, in its turn, MAY override any default value coming from the configuration file. If the catalog consumer's configuration does not allow overriding its default values by a catalog zone (e.g., because of security considerations), then the catalog consumer SHOULD communicate to the operator (e.g., through a log message) information about the properties that are ignored because of the configuration.
 
 ## Binding additional attributes
 
