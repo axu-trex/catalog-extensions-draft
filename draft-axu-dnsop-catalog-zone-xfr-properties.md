@@ -106,6 +106,18 @@ This document specifies DNS Catalog Zones Properties to specify primary name ser
 
 The new properties, specified in {{new-properties}}, MAY be at the apex of the catalog zone, where they will affect all member zones, or under a member zone label, where they will affect just that member zone. Any property under a member zone label will override that same property at the apex, which, in its turn, MAY override any default value coming from the configuration file. If the catalog consumer's configuration does not allow overriding its default values by a catalog zone (e.g., because of security considerations), then the catalog consumer SHOULD communicate to the operator (e.g., through a log message) information about the properties that are ignored because of the configuration.
 
+When a property is overriden, the new property replaces all RRs of the old property. For example, both TXT and AAAA RRs defined at the apex are ignored for `ZONELABEL1`, but not ignored for `ZONELABEL2`, because `ZONELABEL2` does not override the `primaries` property:
+
+~~~ ascii-art
+label.primaries.$CATZ   0            IN AAAA 2001:db8:35::53
+label.primaries.$CATZ   0            IN TXT "TSIG key"
+
+ZONELABEL1.zones.$CATZ  0            IN PTR example.com.
+primaries.ZONELABEL1.zones.$CATZ  0  IN A 192.0.2.53
+
+ZONELABEL2.zones.$CATZ  0            IN PTR example.net.
+~~~
+
 ## Binding additional attributes
 
 It is possible to distinguish groups of values with all the properties from {{new-properties}}, by adding an additional label before the property.
