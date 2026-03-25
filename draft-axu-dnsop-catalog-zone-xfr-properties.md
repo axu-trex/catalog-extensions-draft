@@ -20,7 +20,7 @@ keyword:
 venue:
   group: dnsop
   type: Working Group
-  mail: dnsop@iets.org
+  mail: dnsop@ietf.org
   arch: https://mailarchive.ietf.org/arch/browse/dnsop/
   github: DNS-Hackathon/catalog-extensions-draft
   latest:
@@ -289,7 +289,7 @@ To this end this document introduces the `groups` property.
 
 ## Groups (the `groups` property)
 
-The list of catalog group that have properties assigned to it, is specified as a collection of member nodes represented by TXT RRs under the owner name "groups" where "groups" is a direct child domain of the catalog zone.
+The list of catalog groups that have properties assigned to it, is specified as a collection of member nodes represented by TXT RRs under the owner name "groups" where "groups" is a direct child domain of the catalog zone.
 The names of member zones are represented on the RDATA side of a TXT record (instead of being represented as a part of owner names) so that all valid group names may be represented.
 This TXT record MUST be the only record in the TXT RRset with the same name.
 The presence of more than one record in the RRset indicates a broken catalog zone that MUST NOT be processed (see {{Section 5.1. of !RFC9432}}).
