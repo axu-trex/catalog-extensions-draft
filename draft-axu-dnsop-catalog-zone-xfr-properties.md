@@ -20,9 +20,9 @@ keyword:
 venue:
   group: dnsop
   type: Working Group
-  mail: dnsop@iets.org
+  mail: dnsop@ietf.org
   arch: https://mailarchive.ietf.org/arch/browse/dnsop/
-  github: https://github.com/DNS-Hackathon/catalog-extensions-draft
+  github: DNS-Hackathon/catalog-extensions-draft
   latest:
 updates: 9432
 
@@ -83,7 +83,7 @@ This document specifies DNS Catalog Zones Properties that define the primary nam
 
 This document also defines a `groups` property, for the apex of the catalog zone, as a location to assign the additional properties to certain catalog zone groups.
 
-Besides the additional properties, this document updates RFC9432 by explicitly allowing CNAMEs and DNAMEs.
+Besides the additional properties, this document updates RFC9432 by explicitly allowing CNAME and DNAME records.
 
 --- middle
 
@@ -95,8 +95,8 @@ Configuration associated with the member zones, such as from which primary name 
 This document specifies DNS Catalog Zones Properties to specify primary name servers from which to transfer the member zones, as well as properties to specify which IP addresses, using which cryptographic keys, are allowed to notify the secondary name server serving the member zones, in order to:
 
   - remove the necessity to preprovision those at the catalog consumers,
-  - to fascilitate ad-hoc changes, and
-  - to fascilitate exceptions for individual member zones.
+  - to facilitate ad-hoc changes, and
+  - to facilitate exceptions for individual member zones.
 
 ## Requirements language
 
@@ -111,10 +111,10 @@ The new properties, specified in {{new-properties}}, MAY be at the apex of the c
 It is possible to distinguish groups of values with all the properties from {{new-properties}}, by adding an additional label before the property.
 This allows binding additional attributes within the group, for example binding TSIG keys to certain IP addresses.
 
-## CNAMEs and DNAMEs
+## CNAME and DNAME Records
 
-This document updates {{!RFC9432}} by explicitly allowing CNAMEs {{!RFC1035}} and DNAMEs {{!RFC6672}} anywhere in the catalog.
-The CNAME and DNAME RRs in an catalog zone MUST refer to names within the same (catalog) zone.
+This document updates {{!RFC9432}} by explicitly allowing CNAME {{!RFC1035}} and DNAME {{!RFC6672}} anywhere in the catalog.
+The CNAME and DNAME RRs in a catalog zone MUST refer to names within the same (catalog) zone.
 When a CNAME and DNAME RRs refer to owner names outside of the (catalog) zone, they MUST be considered invalid and MUST be ignored.
 
 For example, using some of the properties from {{new-properties}}:
@@ -129,6 +129,17 @@ allow-transfer.customer1.config.$CATZ 0 IN CNAME internal.acls.config.$CATZ
 
 internal.acls.config.$CATZ            0 IN APL 1:10.0.0.0/8 2:fd00:0:0:0:0:0:0:0/8
 ~~~
+
+# Schema Version (version property)
+
+For this memo, the value of the version.$CATZ TXT resource record is unchanged.
+
+{{Section 3 of !RFC9432 (DNS Catalog Zones)}} is clear that "Catalog
+consumers MUST ignore any RRs in the catalog zone for which no
+processing is specified or which are otherwise not supported by the
+implementation." and as such the addition of the records outlined in
+this document will be ignored by implementations that do not
+recognise them.
 
 # New Properties
 
@@ -146,7 +157,7 @@ ZONELABEL1.zones.$CATZ  0            IN PTR example.com.
 primaries.ZONELABEL1.zones.$CATZ  0  IN AAAA 2001:db8:35::53
 ~~~
 
-If there are any RRs attached to the `primaries` that are not covered by this document, they SHOULD be ignored.
+If there are any RRs attached to the `primaries` that are not defined by this document, they SHOULD be ignored.
 
 ### TSIG Key Name
 
@@ -209,7 +220,7 @@ ns5.notify.ZONELABEL4.zones.$CATZ 0 IN AAAA 2001:db8:35::54
 ns5.notify.ZONELABEL4.zones.$CATZ 0 IN TXT "keyname-for-ns5"
 ~~~
 
-If there are any RRs attached to the `notify` property that are not covered by this document, they SHOULD be ignored.
+If there are any RRs attached to the `notify` property that are not defined by this document, they SHOULD be ignored.
  
 ## Allow Query
 
@@ -278,7 +289,7 @@ To this end this document introduces the `groups` property.
 
 ## Groups (the `groups` property)
 
-The list of calalog group that have properties assigned to it, is specified as a collection of member nodes represented by TXT RRs under the owner name "groups" where "groups" is a direct child domain of the catalog zone.
+The list of catalog groups that have properties assigned to it, is specified as a collection of member nodes represented by TXT RRs under the owner name "groups" where "groups" is a direct child domain of the catalog zone.
 The names of member zones are represented on the RDATA side of a TXT record (instead of being represented as a part of owner names) so that all valid group names may be represented.
 This TXT record MUST be the only record in the TXT RRset with the same name.
 The presence of more than one record in the RRset indicates a broken catalog zone that MUST NOT be processed (see {{Section 5.1. of !RFC9432}}).
@@ -298,7 +309,7 @@ If there was no existing group yet, then an entry below the `groups` property de
 
 # Implementation and Operational Notes
 
-One of the rationales for allowing CNAMEs and DNAMEs is that a large and complex catalog may have large and complex access lists repeated a million times. But if there are only a few different access lists, they could be defined separately and then be referenced a million times, reducing both the size and processing effort of the catalog zone.
+One of the rationales for allowing CNAME and DNAME records is that a large and complex catalog may have large and complex access lists repeated many times. But if there are only a few different access lists, they could be defined separately and then be referenced many times, reducing both the size and processing effort of the catalog zone.
 
 Alternatively, a group property may be used for this, which will or will not have additional properties assigned to it under the `groups` property (see {{groups}}).
 
