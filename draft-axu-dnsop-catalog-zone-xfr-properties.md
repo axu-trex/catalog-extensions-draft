@@ -104,7 +104,19 @@ This document specifies DNS Catalog Zones Properties to specify primary name ser
 
 # Catalog Zone Structure
 
-The new properties, specified in {{new-properties}}, MAY be at the apex of the catalog zone, where they will affect all member zones, or under a member zone label, where they will affect just that member zone. Any property under a member zone label will override that same property at the apex.
+The new properties, specified in {{new-properties}}, MAY be at the apex of the catalog zone, where they will affect all member zones, or under a member zone label, where they will affect just that member zone. Any property under a member zone label will override that same property at the apex, which, in its turn, MAY override any default value coming from the configuration file. If the catalog consumer's configuration does not allow overriding its default values by a catalog zone (e.g., because of security considerations), then the catalog consumer SHOULD communicate to the operator (e.g., through a log message) information about the properties that are ignored because of the configuration.
+
+When a property is overriden, the new property replaces all RRs of the old property. For example, both TXT and AAAA RRs defined at the apex are ignored for `ZONELABEL1`, but not ignored for `ZONELABEL2`, because `ZONELABEL2` does not override the `primaries` property:
+
+~~~ ascii-art
+label.primaries.$CATZ   0            IN AAAA 2001:db8:35::53
+label.primaries.$CATZ   0            IN TXT "TSIG key"
+
+ZONELABEL1.zones.$CATZ  0            IN PTR example.com.
+primaries.ZONELABEL1.zones.$CATZ  0  IN A 192.0.2.53
+
+ZONELABEL2.zones.$CATZ  0            IN PTR example.net.
+~~~
 
 ## Binding additional attributes
 
@@ -183,9 +195,7 @@ Catalog consumers MUST transfer member zone and incremental updates over either 
 An authentication domain name (see {{Section 2 of !RFC8310}}) MAY be provided by a PTR RRset, which MUST consist of a single PTR RR, at the same name as the TLSA RRset.
 When an authentication domain name is provided, catalog consumer MUST send the TLS SNI extension containing that name.
 
-For the same reasons as given in {{Section 3.1.3 of !RFC7672}}, the TLSA RRs with certificate usage PKIX-TA(0) or PKIX-EE(1) SHOULD NOT be included.
-Usage of such RRs by catalog consumers is undefined.
-Catalog consumers MAY treat such RRs as "unusable".
+For the same reasons as given in {{Section 3.1.3 of !RFC7672}}, the TLSA RRs with certificate usage PKIX-TA(0) or PKIX-EE(1) SHOULD NOT be included. Catalog consumers SHOULD treat such RRs as "unusable" and ignore the affected `primaries` property. Catalog consumers SHOULD also communicate the error to the operator (e.g., through a log message).
 
 ~~~ ascii-art
 ZONELABEL2.zones.$CATZ  0                IN PTR example.net.
@@ -234,7 +244,7 @@ The absence of an `allow-query` property at both apex of the catalog as well as 
 
 Additional attributes (such as TSIG keys) can be bound to specific APL RRs by an additional label below the property label.
 The prefixes (with or without attributes) will be processed in {{Section 6 of !RFC4034 (canonical order)}}, which means that the RRsets at the `allow-query` property label will be processed first, followed by the RRsets with the additional label in canonical order.
-When a catalog consumer encounters an APL RRset containing more that a single APL RR, MUST be interpreted as an APL RRset containing a single APL RR denying all IP addresses, i.e.: `APL !1:0.0.0.0/0 !2:0:0:0:0:0:0:0:0/0`.
+When a catalog consumer encounters an APL RRset containing more that a single APL RR, it MUST be interpreted as an APL RRset containing a single APL RR denying all IP addresses, i.e.: `APL !1:0.0.0.0/0 !2:0:0:0:0:0:0:0:0/0`.
 
 ### TSIG Key Name
 
@@ -263,7 +273,7 @@ The prefixes listed in the APL are processed in order:
 The absence of an `allow-transfer` property at both apex of the catalog as well as at a member zone, signifies that transfers of the zone from the consumer MUST NOT be allowed.
 Additional attributes (such as TSIG keys) can be bound to specific APL RRs by an additional label below the property label.
 The prefixes (with or without attributes) will be processed in {{Section 6 of !RFC4034 (canonical order)}}, which means that the RRsets at the `allow-transfer` property label will be processed first, followed by the RRsets with the additional label in canonical order.
-When a catalog consumer encounters an APL RRset containing more that a single APL RR, MUST be interpreted as an APL RRset containing a single APL RR denying all IP addresses, i.e.: `APL !1:0.0.0.0/0 !2:0:0:0:0:0:0:0:0/0`.
+When a catalog consumer encounters an APL RRset containing more that a single APL RR, it MUST be interpreted as an APL RRset containing a single APL RR denying all IP addresses, i.e.: `APL !1:0.0.0.0/0 !2:0:0:0:0:0:0:0:0/0`.
 
 ### TSIG Key Name
 
@@ -280,7 +290,7 @@ ZONELABEL5.zones.$CATZ  0                IN PTR example.local.
 50-external.allow-transfer.ZONELABEL5.zones.$CATZ 0 IN TXT "keyname"
 ~~~
 
-If there are RRs other than APL or CNAME attached to the allow-transfer property, and if an APL RR cannot be found or there is a CNAME that doesn't point to an APL, then the most restrictive access list possible SHOULD be assumed.
+If there are RRs other than APL, CNAME, or TXT attached to the allow-transfer property, or if neither an APL RR, nor a TXT RR can be found and there is also no CNAME that points to a meaningful RR (APL or TXT), then the most restrictive access list possible SHOULD be assumed.
 
 # Assigning properties to groups {#groups}
 
@@ -304,7 +314,7 @@ where `<unique-N>` is a label that tags each record in the collection and has a 
 When different `<unique-N>` labels hold the same TXT value (i.e., provide more than a single place to assign properties to the same group), the catalog zone is broken and MUST NOT be processed (see {{Section 5.1. of !RFC9432}}).
 
 Properties assigned to a catalog group, below an entry below the `groups` property extends the configuration that was already associated with that group.
-If the existing configuration for the group had a configuration value, that is also targeted with property assigned for the group, then the assigned properties value MUST override the original value.
+If the existing configuration for the group had a configuration value that is also targeted with property assigned for the group, then the assigned property's value MUST override the original value.
 If there was no existing group yet, then an entry below the `groups` property defines the new group.
 
 # Implementation and Operational Notes
